@@ -11,11 +11,14 @@ float y0, y1, y2, y3, y4;
 String currentNumber = " ";
 boolean isMousePressed = false; // Flag to track mouse button state
 
+int s = 0;
+
 void setup() {
   size(400, 700);
   appWidth = width;
   appHeight = height;
-
+  frameRate(1);
+//
   // Population of rect() variables
   widthSquare = appWidth * 1/4;
   heightSquare = widthSquare;
@@ -31,15 +34,35 @@ void setup() {
 
 void draw() {
   background(255); // Clear the background
-
+//
+ int milliseconds = millis();
+  s = milliseconds/1000;
   // Draw rectangles
   drawNumbers();
+ int h = hour();      // Get the current hour
+  int m = minute();    // Get the current minute
+  String ampm = "AM";  // Default to AM
+
+  // Convert to 12-hour format and determine AM/PM
+  if (h >= 12) {
+    ampm = "PM";
+    if (h > 12) {
+      h -= 12;
+    }
+  }
+  
+  // Ensure 2-digit display for hours and minutes
+  String hourString = nf(h, 2);
+  String minuteString = nf(m, 2);
+fill(0);
+text(hourString + ":" + minuteString + " " + ampm, width / 2, y4 + heightSquare*1.5);
 
   // Display the currentNumber with some spacing above the number pad
   textSize(26);
   fill(0);
   textAlign(CENTER, CENTER);
-  text(currentNumber, appWidth / 2, y0 - widthSquare / 2);
+  text(currentNumber, appWidth / 2, y4 = widthSquare / 2);
+
 }
 
 void drawNumbers() {
@@ -87,7 +110,7 @@ void mousePressed() {
     } else if ( mouseX>x0 && mouseX<x0+widthSquare && mouseY>y3 && mouseY<y3+widthSquare ) {
       currentNumber = " "; // Clear all
     } else if ( mouseX>x2 && mouseX<x2+widthSquare && mouseY>y3 && mouseY<y3+widthSquare ) {
-      currentNumber = " "; // Delete
+      currentNumber = "done "; // Delete
     }  else if ( mouseX>x2 && mouseX<x2+widthSquare && mouseY>y3 && mouseY<y3+widthSquare ) {
       if (currentNumber.length() > 1) {
         currentNumber = currentNumber.substring(0, currentNumber.length() - 1) + " " + currentNumber.charAt(currentNumber.length() - 1); // Delete
@@ -102,6 +125,4 @@ void mouseReleased() {
 }
 
 void keyPressed() {
-  // Handle key presses to update currentNumber (if needed)
-  // ...
 }
