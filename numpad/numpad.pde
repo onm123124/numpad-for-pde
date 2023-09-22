@@ -10,8 +10,11 @@ float x0, x1, x2;
 float y0, y1, y2, y3, y4;
 String currentNumber = " ";
 boolean isMousePressed = false; // Flag to track mouse button state
-
 int s = 0;
+int timerValue = 0; // Timer value in seconds
+boolean isTimerRunning = false; // Flag to track whether the timer is running
+int startTime = 0; // Start time of the timer in milliseconds
+
 
 void setup() {
   size(400, 700);
@@ -66,20 +69,31 @@ text(hourString + ":" + minuteString + " " + ampm, width / 2, y4 + heightSquare*
 }
 
 void drawNumbers() {
+  textSize(32);
+  textAlign(CENTER, CENTER);
+
+  // Draw buttons with labels
+  drawButton(x0, y0, widthSquare, heightSquare, "1");
+  drawButton(x1, y0, widthSquare, heightSquare, "2");
+  drawButton(x2, y0, widthSquare, heightSquare, "3");
+  drawButton(x0, y1, widthSquare, heightSquare, "4");
+  drawButton(x1, y1, widthSquare, heightSquare, "5");
+  drawButton(x2, y1, widthSquare, heightSquare, "6");
+  drawButton(x0, y2, widthSquare, heightSquare, "7");
+  drawButton(x1, y2, widthSquare, heightSquare, "8");
+  drawButton(x2, y2, widthSquare, heightSquare, "9");
+  drawButton(x1, y3, widthSquare, heightSquare, "0");
+
+  // Draw Clear and Done buttons
+  drawButton(x0, y3, widthSquare, heightSquare, "Clear");
+  drawButton(x2, y3, widthSquare, heightSquare, "Done");
+}
+
+void drawButton(float posX, float posY, float buttonWidth, float buttonHeight, String label) {
   fill(255);
-  rect(x0, y0, widthSquare, heightSquare);
-  rect(x0, y1, widthSquare, heightSquare);
-  rect(x0, y2, widthSquare, heightSquare);
-  rect(x0, y3, widthSquare, heightSquare);
-  rect(x1, y0, widthSquare, heightSquare);
-  rect(x1, y1, widthSquare, heightSquare);
-  rect(x1, y2, widthSquare, heightSquare);
-  rect(x1, y3, widthSquare, heightSquare);
-  rect(x2, y0, widthSquare, heightSquare);
-  rect(x2, y1, widthSquare, heightSquare);
-  rect(x2, y2, widthSquare, heightSquare);
-  rect(x2, y3, widthSquare, heightSquare);
-  
+  rect(posX, posY, buttonWidth, buttonHeight);
+  fill(0);
+  text(label, posX + buttonWidth / 2, posY + buttonHeight / 2);
 }
 
 void mousePressed() {
