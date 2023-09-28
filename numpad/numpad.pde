@@ -15,13 +15,18 @@ int timerValue = 0; // Timer value in seconds
 boolean isTimerRunning = false; // Flag to track whether the timer is running
 boolean startTimer1 = false;
 int startTime= 0;// Start time of the timer in milliseconds
+float circleSize = 50; // Initial size of the circle
+boolean isCircleVisible = false; // Flag to track whether the circle should be visible
+int circleStartTime = 0; // Start time of the circle timer
 
 
 void setup() {
   size(400, 700);
   appWidth = width;
   appHeight = height;
-  frameRate(1);
+  
+ frameRate(1);
+
   //
   // Population of rect() variables
   widthSquare = appWidth * 1/4;
@@ -36,13 +41,16 @@ void setup() {
   y4 = widthSquare * 14/2;
 }
 
+
 void draw() {
   background(255); // Clear the background
-  //
+
   int milliseconds = millis();
-  s = milliseconds/1000;
+  s = milliseconds / 1000;
+  
   // Draw rectangles
   drawNumbers();
+  
   int h = hour();      // Get the current hour
   int m = minute();    // Get the current minute
   String ampm = "AM";  // Default to AM
@@ -59,18 +67,32 @@ void draw() {
   String hourString = nf(h, 2);
   String minuteString = nf(m, 2);
   fill(0);
-  text(hourString + ":" + minuteString + " " + ampm, width / 2, y4 + heightSquare*1.5);
+  text(hourString + ":" + minuteString + " " + ampm, width / 2, y4 + heightSquare * 1.5);
 
   // Display the currentNumber with some spacing above the number pad
   textSize(26);
   fill(0);
   textAlign(CENTER, CENTER);
+
+  if (isTimerRunning) {
+    // Calculate the remaining time based on the total time and elapsed time
+    int elapsedMillis = millis() - startTime;
+    int remainingMillis = max(timerValue * 1000 - elapsedMillis, 0);
+
+    int remainingSeconds = remainingMillis / 1000;
+    currentNumber = str(remainingSeconds);
+
+    // Calculate circle size based on remaining time
+    float maxSize = widthSquare;
+    circleSize = map(remainingMillis, 0, timerValue * 1000, 0, maxSize);
+  }
+
   text(currentNumber, appWidth / 2, y4 = widthSquare / 2);
 
   // Update the timer
   startTimer();
+  updateCircle();
 }
-
 
 void drawNumbers() {
   textSize(32);
@@ -147,12 +169,22 @@ void mouseReleased() {
 }
 
 void keyPressed() {
+  // Check if a key was pressed
+  if (key >= '0' && key <= '9') {
+    currentNumber += key;
+  } else if (key == BACKSPACE) {
+    if (currentNumber.length() > 0) {
+      currentNumber = currentNumber.substring(0, currentNumber.length() - 1); // Delete the last character
+    }
+  } else if (key == ' ') {
+    currentNumber = " "; // Clear all
+  }
 }
 void startTimer() {
   if (startTimer1) {
     String[] numbers = splitTokens(currentNumber, " "); // Split the string by spaces
     int totalTimerValue = 0;
-    
+
     for (String num : numbers) {
       try {
         int value = Integer.parseInt(num);
@@ -161,17 +193,42 @@ void startTimer() {
         println("Invalid number: " + num);
       }
     }
-    
+
     println("Timer started with total time: " + totalTimerValue + " seconds");
     isTimerRunning = true;
     timerValue = totalTimerValue;
+    startTime = millis(); // Store the start time
+    isCircleVisible = true; // Show the circle
+    circleSize = 50; // Initial circle size
+    circleStartTime = millis(); // Start time of the circle timer
   }
-  
+
   if (isTimerRunning) {
-    if (millis() - startTime >= timerValue * 1000) {
+    // Calculate the remaining time based on the total time and elapsed time
+    int elapsedMillis = millis() - startTime;
+    int remainingMillis = max(timerValue * 1000 - elapsedMillis, 0);
+
+    if (remainingMillis == 0) {
       println("Timer done");
       isTimerRunning = false;
       currentNumber = "";
+      isCircleVisible = false; // Hide the circle when the timer is done
     }
+  }
+}
+
+
+void updateCircle() {
+  if (isCircleVisible) {
+    float elapsedTime = millis() - circleStartTime;
+    float remainingTime = (timerValue * 1000) - elapsedTime;
+    float maxSize = widthSquare;
+
+    // Calculate the circle size based on the remaining time and elapsed time
+    circleSize = map(remainingTime, 0, timerValue * 1000, 0, maxSize);
+
+    fill(0, 0, 255); // Blue color
+    noStroke();
+    ellipse(width / 2, height / 5, circleSize, circleSize);
   }
 }
